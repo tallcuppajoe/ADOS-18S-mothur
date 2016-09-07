@@ -1,6 +1,6 @@
 
 #We need to create micron.stability.files which is simply a text file with the samples and the associated fastq files for the forward and reverse reads
-#An example is in L:\lab\GenomicsNutrients\Computing\MiSeq_SOP. 
+#An example is in L:\lab\GenomicsNutrients\Computing\MiSeq_SOP. This may change a little once the data are in. start with make.contigs for practice with the tutorial data
 make.file(type=gz, input=D:\micron\data\16S\16S\raw\micron.gz, outputdir=D:\micron\data\16S\16S\raw)
 #The result of the make.file command is a fileList.paired.file which we will rename
 system(rename D:\micron\data\16S\16S\raw\fileList.paired.file micron.stability.files)
