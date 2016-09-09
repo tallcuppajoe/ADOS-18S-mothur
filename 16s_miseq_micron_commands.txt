@@ -128,41 +128,110 @@ unique.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.
 
 summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.count_table)
 
+	#compare this to the last summary.seqs result and note the decrease in unique sequences.
 
-#denoise the sequences using pre.cluster and allow up to 2 differences between sequences
+
 pre.cluster(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.count_table, diffs=2)
+
+	#Denoise the sequences by removing sequences that are likely due to sequencing error.
+	#Allow up to 2 differences between sequences to be considered the same sequence.
+	#Rule of thumb is 1 difference per 100 bp of sequence.
+	#This generates a lot of output files, including a .map file for each sample.
+
+
 summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.count_table)
-#chimeras will exist in our sequence and we will remove them using uchime
-chimera.uchime(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.count_table, dereplicate=t)
-#while chimera.uchime removes the chimeras from the count file, we have to run a command to remove them from the fasta
+
+	#Expect a significant drop in the number of unique sequences. The total number of sequences should be unchanged.
+
+
+chimera.uchime(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.count_table, dereplicate=t, processors=1)
+
+	#Chimeras are generated in the PCR step and are removed from our sequences using uchime
+	#Only one processor is used (it's the default) because this step caused mothur to close unexpectedly on occassion.
+	#while chimera.uchime removes the chimeras from the count file, they must be removed from the fasta.
+
+
 remove.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.fasta, accnos=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.accnos)
-#run a summary to see what we're left with
+
+	#The chimeras are removed and the number of sequences removed will be reported.
+	
+
 summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.count_table)
-#we want to remove chloroplasts and mitochondria. on the mothur sop they remove archaea, but the EMP primers should pick up archaea so we keep those
-#first we'll have to classify them, then we'll remove the unwanted lineages
-classify.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.count_table, reference=D:\micron\data\16S\references\trainset9_032012.pds.fasta, taxonomy=D:\micron\data\16S\references\trainset9_032012.pds.tax, cutoff=80)
+
+	#The change in sequences after removal of chimeras should be noted.
+
+
+classify.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.count_table, reference=D:\micron\data\16S\references\trainset9_032012.pds.fasta, taxonomy=D:\micron\data\16S\references\trainset9_032012.pds.tax, cutoff=80, processors=3)
+
+	#This was done using the RDP trainset data as well as the full silva data, with the exact same results.
+	#The trainset data are smaller and the process runs much more quickly, so that option is chosen here.
+	#Three processors were chosen to make that the default number again.
+
+
 remove.lineage(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.count_table, taxonomy=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.taxonomy, taxon=Chloroplast-Mitochondria-unknown-Eukaryota)
-#take a look to see how many unique sequences are left
+
+	#Chloroplasts, mitochondria, eukaryotes, and unknown were removed.
+	#In the mothur MiSeq SOP they remove archaea, but the EMP primers should pick up archaea so they are kept in this protocol.
+
+
 summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.count_table)
-#the error rate can be assessed if a mock community was run. you should not use the mock to set up your quality parameters, but it is helpful to report.
+
+	#Note the drop in the number of unique sequences.
+
+	#The error rate can be assessed on the mock community. 
+	#The mock shoudl not be used to set up your quality parameters, but it is helpful to report.
+
 get.groups(count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.count_table, fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.fasta, groups=Mock)
+
+	#Only the Mock sample has been selected. 
+	#The number of sequences in the fasta and count will be reported.
+	#For multiple Mock samples, different names should be used for each. Variable for groups= will be the name1-name-2-name1-etc. 
+	
 #the number of unique sequences will be displayed, as well as the total number of sequences. to assess the error rate we check the sequence error against the known sequences of the mock
 seq.error(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.pick.count_table, reference=D:\micron\data\16S\references\HMP_MOCK.v35.fasta, aligned=F)
-#it is sometimes difficult to see the error rate on the screen. the error rate will be in the log file.
-#cluster the mock sequences into OTU to see how many spurious OTU we have. the following commands work with the files generated above after get.groups so it only includes the mock community.
+
+	#The sequences in the Mock samples are compared to the known sequences from the BEI control.
+	#The BEI control is the same as that used for the Human Microbiome Project, thus the HMP name.
+	#The error rate will be reported. Would like this to be below 0.01%.
+
+
+	#The Mock sequences should be clustered into OTU to enumerate the spurious OTU. 
+	#The following commands work with the files generated above after get.groups so they only include the mock community.
+
 dist.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.fasta, cutoff=0.20)
 cluster(column=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.dist, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.pick.count_table)
 make.shared(list=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.an.unique_list.list, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.pick.count_table, label=0.03)
 rarefaction.single(shared=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.an.unique_list.shared)
-#the file generated is a .rarefaction file and provides the data\16S for a rarefaction curve. this tells us how many OTU we have with sampling depth. do NOT expect the exact number in the mock community. it will be larger.
-#moving forward, we want to remove the mock community from the analysis
+
+	#The cutoff for the dist.seqs is higher than is used later.
+	#The file generated is a .rarefaction file and provides the data for a rarefaction curve. 
+	#Opening the rarefaction file in a browser displays the number of OTU for the Mock community at different sampling depths.
+	#Do NOT expect the exact number in the mock community. It will be larger. In the MiSeq SOP for 4061 sequences there are 35 OTU from Mock. Perfect is 20.
+
+
+	#For all further analysis the mock community sequences are removed.
+
 remove.groups(count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.count_table, fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.fasta, taxonomy=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.pick.taxonomy, groups=Mock)
-#we will cluster the remaining samples. micron is a large data\16Sset so splitting the clusters is more efficient.
+
+
+	#Cluster the sample sequences to OTU. MICRoN is a large dataset so splitting the clusters is more efficient.
+
 cluster.split(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.pick.count_table, taxonomy=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.pick.pick.taxonomy, splitmethod=classify, taxlevel=4, cutoff=0.15, processors=3)
-#to find out how many sequences are in each OTU from each group we use make.shared, and we're interested up to a 0.03 cutoff, or 97% similiarity. the input is the file we just generated in the previous step.
+
+	#The split method uses distance and the taxonomy file.
+	#The taxlevel of 4 corresponds to Order.
+
+
 make.shared(list=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.an.unique_list.list, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.pick.count_table, label=0.03)
-#we get the consensus taxonomy for our OTU with the classify.out command
+
+	#Shared file includes the number of sequences in each OTU from each group.
+	#The 97% similarity is chosen (0.03 cutoff).
+
+
 classify.otu(list=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.an.unique_list.list, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.pick.count_table, taxonomy=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.pick.pick.taxonomy, label=0.03)
+
+	#Consensus taxonomy for each OTU.
+
 #open the .taxonomy file generated by the previous command to see the number of times an OTU was observed and the percent that were classified to that genus
 #we want to perform some analysis, but those names are getting unweildy. we'll change them to tidy things up.
 system(rename D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.an.unique_list.shared micron.stability.an.shared)
