@@ -95,17 +95,40 @@ align.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.u
 	#Three processors are used because it was specified above
 
 
-#as usual we should take a look at the sequences to see if we need to rerun screen.seqs (spoiler alert, we probably do)
 summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.align, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.count_table)
-#Find the start and end values for the bulk of the sequences. rerun screen.seqs with these new values, as well as remove homopolymers above the number of the bulk of sequences
+
+	
+	#The start and end should have changed from before to align with the Silva V4 16S.
+	#Screen.seqs should be run again using the start and end values generated at this step.
+
+
 screen.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.align, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.count_table, summary=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.summary, start=1968, end=11550, maxhomop=8)
-#next we'll want to look at the summary again, followed by removal of the overhangs at then ends. there won't be many since we did paired end sequencing.
+	
+	#The start and end values (1968, 11550) might change depending on the results of the align.seqs command.
+	#Sequences with homopolymers greater than 8 were also removed.
+
+
 summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.align, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.good.count_table)
+
+	#Sequences should be more uniform now.
+	#Number of unique and total sequences should have gone down.
+
 filter.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.align, vertical=T, trump=.)
-#the last command told us our final alignment length. since we trimmed the ends we'll run unique.seqs again to remove any redundancies
+
+	#Removed columns with no real information (- or .).
+	#Overhangs at the ends were also removed. Shouldn't have been many since paired-end sequencing was used.
+	#Generated length of filtered alignment, number of columns removed, length of original alignment, and number of sequences used to construct filter.
+
+
 unique.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.good.count_table)
-#looking at a summary will tell us how many reduntant sequences we removed
+
+	#Trimming the ends likely generated some redundancies, which unique.seqs removed.
+	#Reports number of uniques it started with and how many it ended with.
+
+
 summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.count_table)
+
+
 #denoise the sequences using pre.cluster and allow up to 2 differences between sequences
 pre.cluster(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.count_table, diffs=2)
 summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.count_table)
