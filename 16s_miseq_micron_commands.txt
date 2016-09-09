@@ -1,7 +1,7 @@
 #US EPA Gulf Ecology Division Illumina MiSeq 16S EMP sequencing workflow, closed reference OTU picking (September 2016)
 #Author: Joe James
 
-	#All files are explicitly written out in this protocol, rather than using "current," for the sake of clarity.
+	#All files and paths are explicitly written out in this protocol, rather than using "current," for the sake of clarity.
 	#Complete file paths are used so that the mothur folder does not fill up with temporary and intermediate files.
 	#This is an attempt to follow good data hygiene practices. Please change the paths to reflect your environment.
 	#When using this script in the mothur Amazon Machine Instance (AMI) you should follow the instructions found on http://mothur.org/wiki/Mothur_AMI
@@ -34,21 +34,67 @@ make.contigs(file=D:\micron\data\16S\raw\micron.stability.files, inputdir=D:\mic
 
 summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.fasta)
 
-	#Sanity check to make sure sequences are as expected.
-#Next we will screen.seqs to remove files that don't fit what we expect. The maxlength will change based on the results of the summary.seqs above
+	#This is the first look at the sequences and should be in a range that is expected. In this case just over 250 bp.
+
+
 screen.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.fasta, group=D:\micron\data\16S\process\micron.stability.contigs.groups, maxambig=0, maxlength=275)
-#we can look at output to see if it looks better than before by looking at a summary
+
+	#Keeps sequences that fulfill uder defined criteris. Files that don't fit what was expected were removed.
+	#Note - the maxlength will change based on the results of the summary.seqs above. In this case 275 was a reasonable cut-off. Anything larger was removed.
+	#Sequences with any ambiguous bases were removed.
+
+
 summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.fasta)
-#Next we remove tell mothur to only look at the unique sequences
+
+	#This summary reflects the removal of the sequences.
+
+
 unique.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.fasta)
-#We will simplify the group names next and generate a count table
+
+	#Returns only the unique sequences fround in the fasta and reports the total number of sequences followed by the number of uniques sequences.
+
+
 count.seqs(name=D:\micron\data\16S\process\micron.stability.trim.contigs.good.names, group=D:\micron\data\16S\process\micron.stability.contigs.good.groups)
-#look at the count table with summary.seqs
-summary.seqs(count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.count_table)
-#We have already made the fasta for the v4 region of silva and we can look at that file. This command might take a few minutes.
+	
+	#Counts the number of sequences represented by the representative sequence in a name file.
+	#This command uses the same output files (from screen.seqs) as the previous step.
+
+
+summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.count_table)
+
+	#This summary is nearly identical to the one above, but now the number of unique sequences is included.
+
+
+	#The next step uses a custom length of the silva database, specifically for the V4 region of 16S. 
+	#It is not necessary to remake this everytime, but will be included in this script for completeness.
+	#The commands will be hashed out, but the # can be removed if this file has not been generated.
+
+#pcr.seqs(fasta=D:\micron\data\16S\references\silva.seed_v123.align, start=11894, end=25319, keepdots=F)
+
+	#Output file is silva.full_v123.pcr.align
+
+#system(ren D:\micron\data\16S\references\silva.full_v123.pcr.fasta silva.v4.align)
+
+	#File renamed to silva.v4.align for convenience and clarity.
+
 summary.seqs(fasta=D:\micron\data\16S\references\silva.v4.align)
-#align the sample sequences to the reference file
+
+	#Included 14914 sequences, most of which are 293 bp in length.
+
+
 align.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.fasta, reference=D:\micron\data\16S\references\silva.v4.align)
+
+	#Align the sample sequences to the Silva V4 reference alignment.
+	#Alignment of around 200,000 full length sequences to SILVA takes the Schloss lab less than 3 hours.
+	#Search method is kmer (default)
+	#Kmer size is 8 (default)
+	#Alignment method is needleman (default)
+	#Rewards - match=+1, mismatch=-1, opening gap=-2, extending gam=-1 (default)
+	#Alignment is deemed bad if 50% of bases are removed (default)
+	#Reverse complement is not used, flip=f (default)
+	#Three processors are used because it was specified above
+
+
 #as usual we should take a look at the sequences to see if we need to rerun screen.seqs (spoiler alert, we probably do)
 summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.align, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.count_table)
 #Find the start and end values for the bulk of the sequences. rerun screen.seqs with these new values, as well as remove homopolymers above the number of the bulk of sequences
