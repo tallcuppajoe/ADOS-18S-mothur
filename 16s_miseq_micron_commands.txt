@@ -8,7 +8,8 @@
 	#You should also use tmux if using the AMI so that if your local machine gets disconnected your processes don't stop on the EC2 instance.
 	#Also, if using the AMI, note that "\" becomes "/" and the tutorial data in the raw folder shoudl be replaced with the data of interest.
 	#You may need to create the /data/process folder or you can follow Pat's lead in put it directly in the data/mothur folder.
-	#For the purposes of this file, the assumption is that 
+	#For the purposes of this file, the assumption is that this is being run on a local PC.
+
 
 make.file(type=gz, input=D:\micron\data\16S\raw\micron.gz, outputdir=D:\micron\data\16S\raw)
 
@@ -17,15 +18,25 @@ make.file(type=gz, input=D:\micron\data\16S\raw\micron.gz, outputdir=D:\micron\d
 	#This may change a little once the data are in. Start with make.contigs if you are practicing with the tutorial data
 	#The result of the make.file command is a fileList.paired.file which we will rename
 
+
 system(rename D:\micron\data\16S\raw\fileList.paired.file micron.stability.files)
 
+	#The renamed file is to make contigs and merge the forward and reverse reads.
 
-	#Once renamed we can use the stability files to make contigs and merge the forward and reverse reads
+
 make.contigs(file=D:\micron\data\16S\raw\micron.stability.files, inputdir=D:\micron\data\16S\raw, outputdir=D:\micron\data\16S\process, processors=3)
-#Look at the new contigs fasta using summary.seqs
+
+	#Reads the forward fastq and reverse fastq for each sample and outputs new fasta and report files.
+	#Each samples should be listed under Group and the number of sequences in each sample listed under count, with a total for all samples.
+	#This is the first QA check to be sure that all expected samples are present.
+	#Using 3 of 4 available processors.
+
+
 summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.fasta)
+
+	#Sanity check to make sure sequences are as expected.
 #Next we will screen.seqs to remove files that don't fit what we expect. The maxlength will change based on the results of the summary.seqs above
-screen.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.fasta, group=micron.stability.contigs.groups, maxambig=0, maxlength=275)
+screen.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.fasta, group=D:\micron\data\16S\process\micron.stability.contigs.groups, maxambig=0, maxlength=275)
 #we can look at output to see if it looks better than before by looking at a summary
 summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.fasta)
 #Next we remove tell mothur to only look at the unique sequences
