@@ -3,12 +3,15 @@
 
 	#All files and paths are explicitly written out in this protocol, rather than using "current," for the sake of clarity.
 	#Complete file paths are used so that the mothur folder does not fill up with temporary and intermediate files.
-	#This is an attempt to follow good data hygiene practices. Please change the paths to reflect your environment.
-	#When using this script in the mothur Amazon Machine Instance (AMI) you should follow the instructions found on http://mothur.org/wiki/Mothur_AMI
-	#You should also use tmux if using the AMI so that if your local machine gets disconnected your processes don't stop on the EC2 instance.
-	#Also, if using the AMI, note that "\" becomes "/" and the tutorial data in the raw folder shoudl be replaced with the data of interest.
-	#You may need to create the /data/process folder or you can follow Pat's lead in put it directly in the data/mothur folder.
+	#This is an attempt to follow good data hygiene practices. Please change the paths to reflect the environment.
 	#For the purposes of this file, the assumption is that this is being run on a local PC.
+	#When using this script in the mothur Amazon Machine Instance (AMI) follow the instructions found on http://mothur.org/wiki/Mothur_AMI
+	#The tmux program should be used if using the AMI so that if the local machine gets disconnected the processes don't stop on the EC2 instance.
+	#Also, if using the AMI, note that "\" becomes "/" and the tutorial data in the raw folder shoudl be replaced with the data of interest.
+	#The /data/process folder may need to be created or one can follow Pat's lead and output directly in the data/mothur folder.
+	#Most questions can be answered at http://www.mothur.org/wiki/Main_Page.
+	#Much of the language in the comments in this document come directly from the mothur wiki.
+	
 
 
 make.file(type=gz, input=D:\micron\data\16S\raw\micron.gz, outputdir=D:\micron\data\16S\raw)
