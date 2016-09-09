@@ -1,10 +1,26 @@
+#US EPA Gulf Ecology Division Illumina MiSeq 16S EMP sequencing workflow, closed reference OTU picking (September 2016)
+#Author: Joe James
 
-#We need to create micron.stability.files which is simply a text file with the samples and the associated fastq files for the forward and reverse reads
-#An example is in L:\lab\GenomicsNutrients\Computing\MiSeq_SOP. This may change a little once the data are in. start with make.contigs for practice with the tutorial data
+	#All files are explicitly written out in this protocol, rather than using "current," for the sake of clarity.
+	#Complete file paths are used so that the mothur folder does not fill up with temporary and intermediate files.
+	#This is an attempt to follow good data hygiene practices. Please change the paths to reflect your environment.
+	#When using this script in the mothur Amazon Machine Instance (AMI) you should follow the instructions found on http://mothur.org/wiki/Mothur_AMI
+	#You should also use tmux if using the AMI so that if your local machine gets disconnected your processes don't stop on the EC2 instance.
+	#Also, if using the AMI, note that "\" becomes "/" and the tutorial data in the raw folder shoudl be replaced with the data of interest.
+	#You may need to create the /data/process folder or you can follow Pat's lead in put it directly in the data/mothur folder.
+	#For the purposes of this file, the assumption is that 
+
 make.file(type=gz, input=D:\micron\data\16S\raw\micron.gz, outputdir=D:\micron\data\16S\raw)
-#The result of the make.file command is a fileList.paired.file which we will rename
+
+	#This creates the micron.stability.files which is simply a text file with the samples and the associated fastq files for the forward and reverse reads
+	#An example is found in the mothur MiSeq SOP as well as in L:\lab\GenomicsNutrients\Computing\MiSeq_SOP. 
+	#This may change a little once the data are in. Start with make.contigs if you are practicing with the tutorial data
+	#The result of the make.file command is a fileList.paired.file which we will rename
+
 system(rename D:\micron\data\16S\raw\fileList.paired.file micron.stability.files)
-#We will then use the stability files to make contigs and merge the forward and reverse reads
+
+
+	#Once renamed we can use the stability files to make contigs and merge the forward and reverse reads
 make.contigs(file=D:\micron\data\16S\raw\micron.stability.files, inputdir=D:\micron\data\16S\raw, outputdir=D:\micron\data\16S\process, processors=3)
 #Look at the new contigs fasta using summary.seqs
 summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.fasta)
@@ -19,9 +35,9 @@ count.seqs(name=D:\micron\data\16S\process\micron.stability.trim.contigs.good.na
 #look at the count table with summary.seqs
 summary.seqs(count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.count_table)
 #We have already made the fasta for the v4 region of silva and we can look at that file. This command might take a few minutes.
-summary.seqs(fasta=D:\micron\data\16S\ref\silva.v4.align)
+summary.seqs(fasta=D:\micron\data\16S\references\silva.v4.align)
 #align the sample sequences to the reference file
-align.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.fasta, reference=D:\micron\data\16S\ref\silva.v4.align)
+align.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.fasta, reference=D:\micron\data\16S\references\silva.v4.align)
 #as usual we should take a look at the sequences to see if we need to rerun screen.seqs (spoiler alert, we probably do)
 summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.align, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.count_table)
 #Find the start and end values for the bulk of the sequences. rerun screen.seqs with these new values, as well as remove homopolymers above the number of the bulk of sequences
@@ -44,14 +60,14 @@ remove.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.
 summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.count_table)
 #we want to remove chloroplasts and mitochondria. on the mothur sop they remove archaea, but the EMP primers should pick up archaea so we keep those
 #first we'll have to classify them, then we'll remove the unwanted lineages
-classify.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.count_table, reference=D:\micron\data\16S\ref\trainset9_032012.pds.fasta, taxonomy=D:\micron\data\16S\ref\trainset9_032012.pds.tax, cutoff=80)
+classify.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.count_table, reference=D:\micron\data\16S\references\trainset9_032012.pds.fasta, taxonomy=D:\micron\data\16S\references\trainset9_032012.pds.tax, cutoff=80)
 remove.lineage(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.count_table, taxonomy=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.taxonomy, taxon=Chloroplast-Mitochondria-unknown-Eukaryota)
 #take a look to see how many unique sequences are left
 summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.count_table)
 #the error rate can be assessed if a mock community was run. you should not use the mock to set up your quality parameters, but it is helpful to report.
 get.groups(count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.count_table, fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.fasta, groups=Mock)
 #the number of unique sequences will be displayed, as well as the total number of sequences. to assess the error rate we check the sequence error against the known sequences of the mock
-seq.error(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.pick.count_table, reference=D:\micron\data\16S\ref\HMP_MOCK.v35.fasta, aligned=F)
+seq.error(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.pick.count_table, reference=D:\micron\data\16S\references\HMP_MOCK.v35.fasta, aligned=F)
 #it is sometimes difficult to see the error rate on the screen. the error rate will be in the log file.
 #cluster the mock sequences into OTU to see how many spurious OTU we have. the following commands work with the files generated above after get.groups so it only includes the mock community.
 dist.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.fasta, cutoff=0.20)
