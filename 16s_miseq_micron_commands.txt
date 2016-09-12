@@ -10,7 +10,7 @@
 	#Also, if using the AMI, note that "\" becomes "/" and the tutorial data in the raw folder shoudl be replaced with the data of interest.
 	#The /data/process folder may need to be created or one can follow Pat's lead and output directly in the data/mothur folder.
 	#Most questions can be answered at http://www.mothur.org/wiki/Main_Page.
-	#Much of the language in the comments in this document come directly from the mothur wiki.
+	#Much of the language in the comments in this document comes directly from the mothur wiki.
 	
 
 
@@ -42,7 +42,7 @@ summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.fast
 
 screen.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.fasta, group=D:\micron\data\16S\process\micron.stability.contigs.groups, maxambig=0, maxlength=275)
 
-	#Keeps sequences that fulfill uder defined criteris. Files that don't fit what was expected were removed.
+	#Keeps sequences that fulfill uder defined criteria. Files that don't fit what was expected were removed.
 	#Note - the maxlength will change based on the results of the summary.seqs above. In this case 275 was a reasonable cut-off. Anything larger was removed.
 	#Sequences with any ambiguous bases were removed.
 
@@ -71,6 +71,7 @@ summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good
 	#The next step uses a custom length of the silva database, specifically for the V4 region of 16S. 
 	#It is not necessary to remake this everytime, but will be included in this script for completeness.
 	#The commands will be hashed out, but the # can be removed if this file has not been generated.
+	#These commands were not run in the batch. I'm not sure the pcr.seqs command will output to the proper folder.
 
 #pcr.seqs(fasta=D:\micron\data\16S\references\silva.seed_v123.align, start=11894, end=25319, keepdots=F)
 
@@ -182,7 +183,7 @@ summary.seqs(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good
 	#Note the drop in the number of unique sequences.
 
 	#The error rate can be assessed on the mock community. 
-	#The mock shoudl not be used to set up your quality parameters, but it is helpful to report.
+	#The mock should not be used to set up your quality parameters, but it is helpful to report.
 
 get.groups(count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.count_table, fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.fasta, groups=Mock)
 
@@ -190,7 +191,7 @@ get.groups(count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.u
 	#The number of sequences in the fasta and count will be reported.
 	#For multiple Mock samples, different names should be used for each. Variable for groups= will be the name1-name-2-name1-etc. 
 	
-#the number of unique sequences will be displayed, as well as the total number of sequences. to assess the error rate we check the sequence error against the known sequences of the mock
+
 seq.error(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.pick.count_table, reference=D:\micron\data\16S\references\HMP_MOCK.v35.fasta, aligned=F)
 
 	#The sequences in the Mock samples are compared to the known sequences from the BEI control.
@@ -216,8 +217,8 @@ rarefaction.single(shared=D:\micron\data\16S\process\micron.stability.trim.conti
 
 remove.groups(count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.count_table, fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.fasta, taxonomy=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.pick.taxonomy, groups=Mock)
 
-
 	#Cluster the sample sequences to OTU. MICRoN is a large dataset so splitting the clusters is more efficient.
+
 
 cluster.split(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.pick.count_table, taxonomy=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.pick.pick.taxonomy, splitmethod=classify, taxlevel=4, cutoff=0.15, processors=3)
 
