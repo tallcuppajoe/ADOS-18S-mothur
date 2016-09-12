@@ -41,7 +41,7 @@ summary.seqs(fasta=D:\micron\data\18S\process\micron.stability.trim.contigs.fast
 screen.seqs(fasta=D:\micron\data\18S\process\micron.stability.trim.contigs.fasta, group=micron.stability.contigs.groups, maxambig=0, maxlength=150)
 
 	#Keeps sequences that fulfill uder defined criteria. Files that don't fit what was expected were removed.
-	#Note - the maxlength will change based on the results of the summary.seqs above. Until is is actually, this is only a guess. Anything larger was removed.
+	#Note - the maxlength will change based on the results of the summary.seqs above. Until these are actually run, this is only a guess. Anything larger was removed.
 	#Sequences with any ambiguous bases were removed.
 
 
