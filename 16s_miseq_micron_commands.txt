@@ -189,7 +189,7 @@ get.groups(count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.u
 
 	#Only the Mock sample has been selected. 
 	#The number of sequences in the fasta and count will be reported.
-	#For multiple Mock samples, different names should be used for each. Variable for groups= will be the name1-name-2-name1-etc. 
+	#For multiple Mock samples, different names should be used for each. Variable for groups= will be the name1-name-2-name3-etc. 
 	
 
 seq.error(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.pick.count_table, reference=D:\micron\data\16S\references\HMP_MOCK.v35.fasta, aligned=F)
