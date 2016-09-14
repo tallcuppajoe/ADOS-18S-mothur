@@ -220,6 +220,9 @@ remove.groups(count=D:\micron\data\16S\process\micron.stability.trim.contigs.goo
 	#Cluster the sample sequences to OTU. MICRoN is a large dataset so splitting the clusters is more efficient.
 
 
+##The blanks need to be removed as well. I'm thinking of analyzing them here just like the mock community above so that we get some idea of what they are, but they won't impact our clustering of real samples.
+##This appears to be pretty straightforward and I'll look into the mothur forums and the wiki to make sure the procedure is what I believe it to be.
+
 cluster.split(fasta=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.fasta, count=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.pick.count_table, taxonomy=D:\micron\data\16S\process\micron.stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.pick.pick.taxonomy, splitmethod=classify, taxlevel=4, cutoff=0.15, processors=3)
 
 	#The split method uses distance and the taxonomy file.
